@@ -1,7 +1,7 @@
 #import "default-answer-settings.typ": default-answer-settings
 
 #let configure-answers = (
-  priority: -1,
+  priority: 1,
   display: true,
   inline: false,
   heading-levels: (2, 3),
@@ -12,13 +12,13 @@
     let new-settings = current-settings
 
     if priority >= current-settings.display.priority {
-      new-settings = new-settings.set("display", display)
+      new-settings.insert("display", (value: display, priority: priority))
     }
     if priority >= current-settings.inline.priority {
-      new-settings = new-settings.set("inline", inline)
+      new-settings.insert("inline", (value: inline, priority: priority))
     }
     if priority >= current-settings.heading-levels.priority {
-      new-settings = new-settings.set("heading-levels", heading-levels)
+      new-settings.insert("heading-levels", (value: heading-levels, priority: priority))
     }
     answer-settings-state.update(new-settings)
   }
