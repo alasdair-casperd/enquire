@@ -36,6 +36,10 @@
         output = text(font: l.font, output)
       }
 
+      if l.container != none {
+        output = (l.container)(output)
+      }
+
       return output
     }
   }
@@ -94,7 +98,6 @@
     question-label-state.update(full-label)
 
     // Display the label
-    // [#numbering ]
     [#label]
   }
 }

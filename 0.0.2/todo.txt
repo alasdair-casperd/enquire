@@ -1,1 +1,6 @@
 [] Provide utility functions for accessing total marks (currently accessed manually through state in exam template)
+[] Add a 'repeat with answers' function to allow slides to show answers on the next slides
+[] Consider coloured labels for questions like maths rocket worksheets
+[] Address continuation of labels when returning to another prefix
+[] Answer columns on slides and worksheets
+[] Issue in repeat with answers
