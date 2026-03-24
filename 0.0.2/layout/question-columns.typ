@@ -3,7 +3,7 @@
 /**
  * Utility function to lay out questions in a grid without breaking enumerate flow.
  */
-#let question-columns = (columns, content, row-gutter: 1.5em, column-gutter: 1.5em, trailing-space: 1em) => {
+#let question-columns = (columns, content, row-gutter: 1.5em, column-gutter: 1.5em, after: 1em) => {
   // Separate content into array of enumerate items
   let items = content.children.filter(c => c.has("body"))
 
@@ -16,5 +16,5 @@
   grid(columns: columns, column-gutter: column-gutter, row-gutter: row-gutter, ..items)
 
   // Add trailing space after the grid
-  v(trailing-space)
+  v(after)
 }

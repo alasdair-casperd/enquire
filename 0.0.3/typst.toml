@@ -1,0 +1,12 @@
+[package]
+name = "enquire"
+version = "0.0.3"
+entrypoint = "main.typ"
+categories = [ ]
+disciplines = [ ]
+compiler = "0.14.0"
+description = "Utilities for creating questions in worksheets, exam papers or slides"
+
+[template]
+path = "package-default"
+entrypoint = "main.typ"

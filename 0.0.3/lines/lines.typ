@@ -11,39 +11,33 @@
   return not (display-answers and inline-answers)
 }
 
+#let print-lines = (n, spacing: 1em, after: 0.3em, stroke: (:)) => {
+  v(spacing)
+
+  for _ in range(1, n + 1) {
+    line(stroke: stroke)
+    v(spacing)
+  }
+
+  v(after)
+}
 
 /**
  * Function to display repeated lines.
  */
 #let lines = (n, spacing: 1em, after: 0.3em, stroke: (:)) => {
   context {
-    if not determine-lines-visibility() { return }
-
-    v(spacing)
-
-    for _ in range(1, n + 1) {
-      line(stroke: stroke)
-      v(spacing)
-    }
-
-    v(after)
-  }
-}
-
-/**
- * Function to fill available space with lines.
- */
-#let fill-lines = () => {
-  context {
-    // Access answer display state
-    if not determine-lines-visibility() { return }
-
-    block(height: 1fr, width: 100%, clip: true)[
-      #repeat[
-        #lines(100)
+    if n == auto {
+      block(height: 1fr, width: 100%, clip: true)[
+        #repeat(
+          print-lines(100, spacing: spacing, after: after, stroke: stroke),
+        )
       ]
-    ]
-    pagebreak()
+      return
+    }
+    if not determine-lines-visibility() { return }
+
+    print-lines(n, spacing: spacing, after: after, stroke: stroke)
   }
 }
 

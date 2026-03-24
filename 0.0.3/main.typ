@@ -8,7 +8,7 @@
 #import "answers/record-answer.typ": record-answer
 #import "answers/repeat-with-answers.typ": repeat-with-answers
 #import "answers/document-contains-answers.typ": document-contains-answers
-#import "lines/lines.typ": fill-lines, lines
+#import "lines/lines.typ": lines
 #import "marks/marks.typ": marks
 
 // Aliases
