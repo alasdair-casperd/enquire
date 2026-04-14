@@ -1,3 +1,5 @@
+#import "@preview/itemize:0.2.0"
+
 /**
  * Lays out enum questions in a multi-column grid without breaking
  * the enumerate numbering flow.
@@ -14,6 +16,13 @@
 #let question-columns = (columns, content, row-gutter: 1.5em, column-gutter: 1.5em, after: 1em) => {
   let items = content.children.filter(c => c.has("body"))
 
+  let first = true
+  items = items
+    .enumerate()
+    .map(((i, item)) => [
+      #if i != 0 { itemize.resume() }
+      #item
+    ])
   if type(columns) == int {
     columns = (1fr,) * columns
   }

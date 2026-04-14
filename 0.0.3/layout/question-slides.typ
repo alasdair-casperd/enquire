@@ -1,10 +1,11 @@
-#import "../utilities/repeating.typ": repeating
-
 /**
- * Utility function to lay out questions each on a separate slide
+ * Renders each enum question on its own slide with a repeated heading.
+ *
+ * Parameters:
+ * - title (str): Heading text shown above each question. Default: `"Practice Questions"`.
+ * - content (content): An enum whose items are rendered as individual slides.
  */
 #let question-slides = (title: "Practice Questions", content) => {
-  // Separate content into array of enumerate items
   let items = content.children.filter(c => c.has("body"))
 
   for item in items {

@@ -6,9 +6,11 @@
 #import "answers/answers-display.typ": answers-display
 #import "answers/configure-answers.typ": configure-answers
 #import "answers/record-answer.typ": record-answer
-#import "answers/repeat-with-answers.typ": repeat-with-answers
 #import "answers/document-contains-answers.typ": document-contains-answers
 #import "lines/lines.typ": lines
+
+// Marks
+#import "marks/get-total-marks.typ": get-total-marks
 #import "marks/marks.typ": marks
 
 // Aliases
