@@ -1,26 +1,43 @@
 #import "../lines/lines.typ": lines as lines-function
 
+#let _marks-style = state("marks-style", "[1 mark(s)]")
+#let _marks-weight = state("marks-weight", "bold")
+#let _marks-formatter = state("marks-formatter", none)
+
+/**
+ * Configures default mark display settings, stored in state.
+ */
+#let configure-marks = (style: none, weight: none, formatter: none) => {
+  if style != none { _marks-style.update(style) }
+  if weight != none { _marks-weight.update(weight) }
+  if formatter != none { _marks-formatter.update(_ => formatter) }
+}
+
 /**
  * Displays a right-aligned mark indicator for a question.
- *
- * Parameters:
- * - n (int): The number of marks for the question. Automatically
- *     pluralizes "mark" / "marks" based on the value.
- * - lines (int, auto): Answer lines to display beneath the indicator.
- *     - `0`    — no lines (default).
- *     - `int`  — exactly that many lines.
- *     - `auto` — fills the remainder of the page with lines.
- *
- * Side effect: updates the document-wide `total-marks` state so the
- * running total can be retrieved with `get-total-marks`.
  */
-#let marks = (n, lines: 0) => {
-  let word = if (n > 1) { "marks" } else { "mark" }
-  v(-0.3em)
-  box(width: 100%, align(right)[*[#n #word]*])
-  if (type(lines) != int or lines > 0) { v(-0.7em) }
-  [#lines-function(lines)]
+#let marks = (n, lines: 0, style: none, weight: none, formatter: none) => {
+  context {
+    let effective-formatter = if formatter != none { formatter } else { _marks-formatter.get() }
 
-  let total-marks = state("total-marks", 0)
-  total-marks.update(t => t + n)
+    if effective-formatter != none {
+      effective-formatter(n)
+    } else {
+      v(-0.3em)
+
+      let effective-style = if style != none { style } else { _marks-style.get() }
+      let effective-weight = if weight != none { weight } else { _marks-weight.get() }
+
+      let marks-string = effective-style
+      marks-string = marks-string.replace(regex("\d+"), str(n))
+      marks-string = marks-string.replace("(s)", if n == 1 { "" } else { "s" })
+
+      box(width: 100%, align(right, text(marks-string, weight: effective-weight)))
+      if (type(lines) != int or lines > 0) { v(-0.7em) }
+      [#lines-function(lines)]
+    }
+
+    let total-marks = state("total-marks", 0)
+    total-marks.update(t => t + n)
+  }
 }
