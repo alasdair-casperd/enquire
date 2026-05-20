@@ -1,4 +1,4 @@
-#import "@local/enquire:0.0.4": *
+#import "@local/enquire:0.0.5": *
 
 #set enum(numbering: define-numbering())
 

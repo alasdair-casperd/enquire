@@ -1,1 +1,0 @@
-[] Provide utility functions for accessing total marks (currently accessed manually through state in exam template)
