@@ -2,7 +2,7 @@
 #import "layout/question-columns.typ": question-columns
 
 // Lines
-#import "lines/lines.typ": lines
+#import "lines/lines.typ": configure-lines, lines
 
 // Marks
 #import "marks/get-total-marks.typ": get-total-marks
