@@ -8,11 +8,5 @@
 #import "marks/get-total-marks.typ": get-total-marks
 #import "marks/marks.typ": configure-marks, marks
 
-// Utilities
-#import "utilities/prefix.typ": prefix
-#import "utilities/simple-enum.typ": simple-enum
-#import "utilities/reset-numbering.typ": reset-numbering
-
 // Aliases
 #let q-cols = question-columns
-#let task = simple-enum
