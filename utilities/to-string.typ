@@ -1,7 +1,4 @@
-
-/**
- * Function to convert a variable (which may be content) to a string.
- */
+/// Function to convert a variable (which may be content) to a string.
 #let to-string(it) = {
   if type(it) == str {
     it

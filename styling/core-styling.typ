@@ -1,16 +1,10 @@
-/*
-  Core setup and styling for all documents.
-*/
+/// Core setup and styling for all documents.
 #let core-styling(doc) = {
-  //
-  // Configure language and region for spellchecking in the web app
-  //
+  // Set text language and region to support spell checking in the web app
 
   set text(lang: "en", region: "gb")
 
-  //
   // Style stroke for line, rect, table and grid
-  //
 
   let stroke = rgb(0, 0, 0, 50) + 0.5pt
 
@@ -24,9 +18,7 @@
   set grid.hline(stroke: stroke)
   set grid.vline(stroke: stroke)
 
-  //
   // Maths mode overrides
-  //
 
   // Change cosecant format in math mode
   show math.equation: it => {
