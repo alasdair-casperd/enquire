@@ -1,18 +1,4 @@
-// Multi-column layout for enum questions.
-
-/// Collect the enum items contained in `content`, which may be an enum, a
-/// bare item, or markup containing any mix of them.
-#let _extract-items(content) = {
-  if content.func() == enum {
-    content.children
-  } else if content.func() == enum.item {
-    (content,)
-  } else if content.has("children") {
-    content.children.map(_extract-items).join(default: ())
-  } else {
-    ()
-  }
-}
+#import "display-questions.typ": display-questions
 
 /// Lay out enum questions in a multi-column grid (left to right, then top
 /// to bottom) without breaking the numbering flow: each item becomes its own
@@ -42,16 +28,18 @@
   column-gutter: 1.5em,
   after: 1em,
 ) = {
-  let items = _extract-items(content)
   if type(columns) == int { columns = (1fr,) * columns }
-  grid(
-    columns: columns,
-    column-gutter: column-gutter,
-    row-gutter: row-gutter,
-    // Each cell holds a bare enum.item, realised as its own single-item enum
-    // at layout. Constructing `enum(item)` here would break touying, whose
-    // mark traversal cannot enter an already-constructed enum element.
-    ..items,
+  display-questions(
+    items => grid(
+      columns: columns,
+      column-gutter: column-gutter,
+      row-gutter: row-gutter,
+      // Each cell holds a bare enum.item, realised as its own single-item enum
+      // at layout. Constructing `enum(item)` here would break touying, whose
+      // mark traversal cannot enter an already-constructed enum element.
+      ..items,
+    ),
+    content,
   )
   v(after)
 }
