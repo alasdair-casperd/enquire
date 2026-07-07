@@ -6,9 +6,9 @@
 /// Configuration show rule. Apply once at the top of the document:
 ///
 /// ```typst
-/// #show: questioning-setup
+/// #show: enum-setup
 /// // or
-/// #show: questioning-setup.with(numbering: ("1)", "a)"), label-style: my-style)
+/// #show: enum-setup.with(numbering: ("1)", "a)"), label-style: my-style)
 /// ```
 ///
 /// Calling it more than once is safe; the later call's options win from
@@ -26,7 +26,7 @@
 ///   the formatted label. `auto` = no change.
 /// - inline-answers (none, bool, auto, function): whether `ans` also renders
 ///   its answer at the call site, and with what formatter.
-#let questioning-setup(
+#let enum-setup(
   numbering: ("1.", "a.", "i.", "A.", "I."),
   label-format: auto,
   label-style: auto,
