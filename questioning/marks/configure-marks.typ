@@ -1,3 +1,5 @@
+#import "_marks-state.typ": *
+
 ///
 /// Configures default mark display settings, stored in state.
 ///

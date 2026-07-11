@@ -11,6 +11,7 @@
 #import enum-layout: *
 #import lines: *
 #import marks: *
+#import multiple-choice: *
 #import diagrams: *
 
 // Aliases
