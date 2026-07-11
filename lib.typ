@@ -5,7 +5,7 @@
 #import "diagrams/mod.typ" as diagrams
 
 // Unpack modules
-#import questioning: answers, enum-control, enum-layout, lines, marks
+#import questioning: answers, enum-control, enum-layout, lines, marks, multiple-choice
 #import answers: *
 #import enum-control: *
 #import enum-layout: *

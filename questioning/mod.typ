@@ -3,3 +3,4 @@
 #import "enum-layout/mod.typ" as enum-layout
 #import "lines/mod.typ" as lines
 #import "marks/mod.typ" as marks
+#import "multiple-choice/multiple-choice.typ": multiple-choice
