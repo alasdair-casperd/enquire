@@ -1,6 +1,10 @@
 #import "_multiple-choice-state.typ": *
+#import "../../utilities/_css.typ": length-to-css, columns-to-css, align-to-css
 
 #let generate-numbering = numbering
+
+// Fall back to paged output on compilers without HTML support
+#let target-or-paged = if "target" in dictionary(std) { std.target } else { () => "paged" }
 
 ///
 /// Function to display multiple choice options.
@@ -40,15 +44,12 @@
       effective-columns = (1fr,) * options.pos().len()
     }
 
-    let cells = options
+    let entries = options
       .pos()
       .enumerate()
       .map(x => {
         let i = x.at(0)
         let option = x.at(1)
-
-        // Select the appropriate colspan
-        let colspan = colspans.at(i, default: 1)
 
         let label = none
 
@@ -58,22 +59,57 @@
           label = effective-label-formatter(label)
         }
 
-        grid.cell(colspan: colspan, align: effective-align, {
-          if label != none {
-            label
-            h(effective-label-spacing)
+        (option: option, label: label, colspan: colspans.at(i, default: 1))
+      })
+
+    if target-or-paged() == "html" {
+      // Replicate the grid layout with CSS grid; grid-parameters only applies to paged output
+      let container-styles = ("display: grid", "grid-template-columns: " + columns-to-css(effective-columns))
+      if type(effective-column-gutter) == length {
+        container-styles.push("column-gap: " + length-to-css(effective-column-gutter))
+      }
+      if type(effective-row-gutter) == length {
+        container-styles.push("row-gap: " + length-to-css(effective-row-gutter))
+      }
+
+      let cells = entries.map(entry => {
+        let styles = align-to-css(effective-align)
+        if entry.colspan > 1 {
+          styles.push("grid-column: span " + str(entry.colspan))
+        }
+
+        html.elem("div", attrs: if styles.len() > 0 { (style: styles.join("; ")) } else { (:) }, {
+          if entry.label != none {
+            html.elem(
+              "span",
+              attrs: (style: "margin-right: " + length-to-css(effective-label-spacing)),
+              entry.label,
+            )
           }
-          option
+          entry.option
         })
       })
 
-    grid(
-      columns: effective-columns,
-      align: center,
-      column-gutter: effective-column-gutter,
-      row-gutter: effective-row-gutter,
-      ..effective-grid-parameters,
-      ..cells
-    )
+      html.elem("div", attrs: (style: container-styles.join("; ")), cells.join())
+    } else {
+      let cells = entries.map(entry => {
+        grid.cell(colspan: entry.colspan, align: effective-align, {
+          if entry.label != none {
+            entry.label
+            h(effective-label-spacing)
+          }
+          entry.option
+        })
+      })
+
+      grid(
+        columns: effective-columns,
+        align: center,
+        column-gutter: effective-column-gutter,
+        row-gutter: effective-row-gutter,
+        ..effective-grid-parameters,
+        ..cells
+      )
+    }
   }
 }

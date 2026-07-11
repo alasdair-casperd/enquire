@@ -1,8 +1,12 @@
 #import "@preview/cetz:0.4.2"
+#import "../../utilities/_css.typ": align-to-css, track-to-css
 
 // `align` is shadowed by a parameter of `canvas` below; keep a reference to
 // the built-in.
 #let alignment = align
+
+// Fall back to paged output on compilers without HTML support
+#let target-or-paged = if "target" in dictionary(std) { std.target } else { () => "paged" }
 
 ///
 /// Create a diagram. Wrapper around Cetz's `canvas` that applies the module's
@@ -20,7 +24,7 @@
 #let canvas = (
   body,
   width: 100%,
-  align: center,
+  align: left,
   background: none,
   baseline: none,
   debug: false,
@@ -29,36 +33,41 @@
   stroke: none,
 ) => {
   context {
-    box(width: width, height: auto, {
-      // Resolve theme-aware bodies
-      let theme = state("current-theme").final()
-      let resolved-body = if type(body) == function {
-        body(theme)
-      } else {
-        body
-      }
+    // Resolve theme-aware bodies
+    let theme = state("current-theme").final()
+    let resolved-body = if type(body) == function {
+      body(theme)
+    } else {
+      body
+    }
 
-      alignment(
-        align,
-        cetz.canvas(
-          background: background,
-          baseline: baseline,
-          debug: debug,
-          length: scale,
-          padding: padding,
-          stroke: stroke,
-          {
-            // Default styling for all diagrams
-            cetz.draw.set-style(
-              stroke: (thickness: 0.07em, cap: "round"),
-              content: (padding: 0.4em),
-              angle: (radius: 1.2em, label-radius: 2em),
-            )
+    let drawing = cetz.canvas(
+      background: background,
+      baseline: baseline,
+      debug: debug,
+      length: scale,
+      padding: padding,
+      stroke: stroke,
+      {
+        // Default styling for all diagrams
+        cetz.draw.set-style(
+          stroke: (thickness: 0.07em, cap: "round"),
+          content: (padding: 0.4em),
+          angle: (radius: 1.2em, label-radius: 2em),
+        )
 
-            resolved-body
-          },
-        ),
-      )
-    })
+        resolved-body
+      },
+    )
+
+    if target-or-paged() == "html" {
+      // Render the drawing as an svg. A relative width cannot be resolved
+      // inside an HTML frame, so the full-width box and alignment are
+      // replicated with CSS outside the frame
+      let styles = ("width: " + track-to-css(width),) + align-to-css(align)
+      html.elem("div", attrs: (style: styles.join("; ")), html.frame(drawing))
+    } else {
+      box(width: width, height: auto, alignment(align, drawing))
+    }
   }
 }
