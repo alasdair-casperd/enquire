@@ -38,13 +38,34 @@
   if alignment-value.x != none {
     // left, center, right, start and end are all valid CSS text-align values
     styles.push("text-align: " + repr(alignment-value.x))
-    styles.push("display: flex")
-    styles.push("flex-direction: row")
-    styles.push("justify-content: " + repr(alignment-value.x))
   }
   if alignment-value.y != none {
     let vertical = (top: "start", horizon: "center", bottom: "end")
     styles.push("align-self: " + vertical.at(repr(alignment-value.y)))
+  }
+  styles
+}
+
+///
+/// Converts an alignment to an array of CSS style declarations for
+/// positioning the children of a flexbox row.
+///
+#let align-to-flex-css(alignment-value) = {
+  let styles = ()
+  if type(alignment-value) != alignment { return styles }
+  if alignment-value.x != none {
+    let horizontal = (
+      left: "flex-start",
+      center: "center",
+      right: "flex-end",
+      start: "flex-start",
+      end: "flex-end",
+    )
+    styles.push("justify-content: " + horizontal.at(repr(alignment-value.x)))
+  }
+  if alignment-value.y != none {
+    let vertical = (top: "flex-start", horizon: "center", bottom: "flex-end")
+    styles.push("align-items: " + vertical.at(repr(alignment-value.y)))
   }
   styles
 }

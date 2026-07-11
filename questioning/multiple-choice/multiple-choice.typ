@@ -1,5 +1,5 @@
 #import "_multiple-choice-state.typ": *
-#import "../../utilities/_css.typ": length-to-css, columns-to-css, align-to-css
+#import "../../utilities/_css.typ": length-to-css, columns-to-css, align-to-css, align-to-flex-css
 
 #let generate-numbering = numbering
 
@@ -73,12 +73,16 @@
       }
 
       let cells = entries.map(entry => {
-        let styles = align-to-css(effective-align)
+        // Lay out each cell as a flex row so that labels always sit to the
+        // left of their options, even when the option is block content
+        let styles = ("display: flex",)
+        styles += align-to-css(effective-align)
+        styles += align-to-flex-css(effective-align)
         if entry.colspan > 1 {
           styles.push("grid-column: span " + str(entry.colspan))
         }
 
-        html.elem("div", attrs: if styles.len() > 0 { (style: styles.join("; ")) } else { (:) }, {
+        html.elem("div", attrs: (style: styles.join("; ")), {
           if entry.label != none {
             html.elem(
               "span",
@@ -95,10 +99,17 @@
       let cells = entries.map(entry => {
         grid.cell(colspan: entry.colspan, align: effective-align, {
           if entry.label != none {
-            entry.label
-            h(effective-label-spacing)
+            // A nested grid keeps the label to the left of the option, even
+            // when the option is block content
+            grid(
+              columns: 2,
+              column-gutter: effective-label-spacing,
+              entry.label,
+              entry.option,
+            )
+          } else {
+            entry.option
           }
-          entry.option
         })
       })
 
