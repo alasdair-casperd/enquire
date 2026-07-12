@@ -1,11 +1,6 @@
-
-/**
- * Utility function to convert a variable which may be content to a string.
- */
+/// Function to convert a variable (which may be content) to a string.
 #let to-string(it) = {
-  if it == none {
-    "NONE"
-  } else if type(it) == str {
+  if type(it) == str {
     it
   } else if type(it) != content {
     str(it)

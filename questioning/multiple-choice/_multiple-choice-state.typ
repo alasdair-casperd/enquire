@@ -1,0 +1,8 @@
+#let _multiple-choice-grid-parameters = state("multiple-choice-grid-parameters", (:))
+#let _multiple-choice-align = state("multiple-choice-align", left)
+#let _multiple-choice-columns = state("multiple-choice-columns", auto)
+#let _multiple-choice-column-gutter = state("multiple-choice-column-gutter", 2em)
+#let _multiple-choice-row-gutter = state("multiple-choice-row-gutter", 2em)
+#let _multiple-choice-numbering = state("multiple-choice-numbering", "A")
+#let _multiple-choice-label-formatter = state("multiple-choice-label-formatter", strong)
+#let _multiple-choice-label-spacing = state("multiple-choice-label-spacing", 1em)

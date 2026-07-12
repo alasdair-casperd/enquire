@@ -1,8 +1,8 @@
 [package]
 name = "enquire"
 version = "0.0.5"
-entrypoint = "main.typ"
+entrypoint = "lib.typ"
 categories = [ ]
 disciplines = [ ]
-compiler = "0.14.0"
-description = "Utilities for creating questions in worksheets, exam papers or slides"
+compiler = "0.15.0"
+description = "A selection of tools for creating educational resources"
