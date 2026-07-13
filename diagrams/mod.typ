@@ -35,3 +35,6 @@
 // Parsing and evaluation of mathematical expressions (used internally by
 // `plot`; exported for direct use)
 #import "parsing/mod.typ": *
+
+// Functions for drawing graphs (in the graph theoretical sense, see `plotting` for graphs of equations)
+#import "graphs/mod.typ": *
