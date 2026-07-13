@@ -27,7 +27,7 @@
 /// - inline-answers (none, bool, auto, function): whether `ans` also renders
 ///   its answer at the call site, and with what formatter.
 #let enum-setup(
-  numbering: ("1.", "a.", "i.", "A.", "I."),
+  numbering: ("1)", "a)", "i)", "I)", "A)"),
   label-format: auto,
   label-style: auto,
   inline-answers: none,
