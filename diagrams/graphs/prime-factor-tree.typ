@@ -8,7 +8,7 @@
   if not label.has("children") {
     if label.func() == metadata { (label.value,) } else { () }
   } else {
-    label.children.fold((), (acc, c) => acc + node-metadata(c))
+    label.children.fold((), (acc, c) => acc + _node-metadata(c))
   }
 }
 
