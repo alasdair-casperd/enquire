@@ -1,5 +1,6 @@
 #import "current-label.typ": current-label
 #import "enum-info.typ": enum-info
+#import "get-total-items.typ": get-total-items
 #import "prefix.typ": prefix
 #import "enum-setup.typ": enum-setup
 #import "reset-numbering.typ": reset-numbering
