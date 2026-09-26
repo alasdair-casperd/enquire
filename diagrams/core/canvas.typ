@@ -24,7 +24,7 @@
 #let canvas = (
   body,
   width: 100%,
-  align: left,
+  align: center,
   background: none,
   baseline: none,
   debug: false,
