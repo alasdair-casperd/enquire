@@ -136,6 +136,7 @@
       node(
         mid((from.at(0), y-origin), (to.at(0), y-origin)),
         move(dy: x-description-offset)[#x-description],
+        anchor: "center",
       )
     }
 
@@ -169,6 +170,7 @@
         mid((x-origin, from.at(1)), (x-origin, to.at(1))),
         move(dy: -y-description-offset)[#y-description],
         angle: 90deg,
+        anchor: "center",
       )
     }
 
