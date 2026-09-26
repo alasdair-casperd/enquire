@@ -1,6 +1,6 @@
 [package]
 name = "enquire"
-version = "0.0.6"
+version = "0.0.7"
 entrypoint = "lib.typ"
 categories = [ ]
 disciplines = [ ]
