@@ -9,9 +9,9 @@
 /// Normalise a grid step given as a number, an `(x, y)` array or an
 /// `(x: ..., y: ...)` dictionary into a dictionary.
 ///
-#let extract-grid-step = step => {
-  let x = 1
-  let y = 1
+#let extract-grid-step = (step, default: 1) => {
+  let x = default
+  let y = default
   if type(step) in (int, float) {
     x = step
     y = step
@@ -21,11 +21,21 @@
     y = step.at(1)
   }
   if type(step) == dictionary {
-    x = step.at("x", default: 1)
-    y = step.at("y", default: 1)
+    x = step.at("x", default: default)
+    y = step.at("y", default: default)
   }
   return (x: x, y: y)
 }
+
+///
+/// The cetz grid `shift` that places a grid line through `center`. cetz
+/// starts the grid at `from` and offsets it by the shift modulo the step.
+/// (An array is returned because cetz 0.4.2 mishandles a dictionary shift.)
+///
+#let grid-shift = (from, center) => (
+  center.x - from.at(0),
+  center.y - from.at(1),
+)
 
 ///
 /// Draw a set of axes spanning the rectangle between `from` and `to`.
@@ -36,6 +46,9 @@
 ///
 /// - grid: whether to draw a grid
 /// - grid-step: spacing of grid lines (a number, `(x, y)` array or dictionary)
+/// - grid-center: a point that grid lines pass through, whether or not it
+///   lies within the viewport (a number, `(x, y)` array or dictionary);
+///   defaults to the origin
 /// - major-grid-step: spacing of major grid lines, in multiples of the
 ///   minor grid step, or `none` for no major grid
 /// - faded: draw the axes in a light grey (useful for background axes)
@@ -50,6 +63,7 @@
   grid: false,
   grid-style: (:),
   grid-step: 1,
+  grid-center: (0, 0),
   major-grid-step: none,
   major-grid-style: (stroke: 0.5pt + gray),
   axis-color: black,
@@ -77,6 +91,10 @@
   // Apply scale
   cetz.draw.scale(x: x-scale, y: y-scale)
 
+  // Grid lines pass through `grid-center` rather than starting at `from`
+  let center = extract-grid-step(grid-center, default: 0)
+  let shift = grid-shift(from, center)
+
   // Minor grid
   if grid {
     cetz.draw.grid(
@@ -84,6 +102,7 @@
       to,
       help-lines: true,
       step: grid-step,
+      shift: shift,
       ..grid-style,
     )
   }
@@ -96,6 +115,7 @@
       from,
       to,
       step: (x: major-step.x * minor-step.x, y: major-step.y * minor-step.y),
+      shift: shift,
       ..major-grid-style,
     )
   }
