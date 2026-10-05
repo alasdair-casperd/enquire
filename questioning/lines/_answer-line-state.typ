@@ -5,4 +5,4 @@
 #let _answer-line-display = state("answer-line-display", true)
 #let _answer-line-gap = state("answer-line-gap", 0.3em)
 // Widths for the named lengths accepted by `answer-line`
-#let _answer-line-lengths = state("answer-line-lengths", (short: 4em, medium: 8em, long: 10em))
+#let _answer-line-lengths = state("answer-line-lengths", (short: 4em, medium: 8em, long: 15em))
