@@ -10,6 +10,7 @@
 
     if effective-formatter != none {
       effective-formatter(n)
+      [#lines-function(lines)]
     } else {
       let effective-inline = if inline != none { inline } else { _marks-inline.get() }
       let effective-style = if style != none { style } else { _marks-style.get() }
