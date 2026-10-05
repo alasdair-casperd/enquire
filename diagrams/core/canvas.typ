@@ -67,7 +67,9 @@
       let styles = ("width: " + track-to-css(width),) + align-to-css(align)
       html.elem("div", attrs: (style: styles.join("; ")), html.frame(drawing))
     } else {
-      box(width: width, height: auto, alignment(align, drawing))
+      // A block rather than a box: an inline box sits on the text baseline,
+      // which would align an enum label with the bottom of the diagram
+      block(width: width, height: auto, alignment(align, drawing))
     }
   }
 }
