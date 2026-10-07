@@ -9,6 +9,7 @@
 // - answers: recorded answers, keyed by "<epoch>:<path>" so that repeated
 //            layout passes (e.g. touying subslides) overwrite rather than
 //            duplicate
+// - mark-scheme: recorded mark scheme notes, keyed like answers
 // - config:  label customisation and answer display options
 //
 // The numbering function installed by `setup` both advances `path` and
@@ -24,6 +25,7 @@
   epoch: 0,
   data: (:),
   answers: (:),
+  mark-scheme: (:),
   config: (
     numbering: ("1.", "a.", "i.", "A.", "I."),
     label-format: auto,
