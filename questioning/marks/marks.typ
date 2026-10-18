@@ -4,7 +4,7 @@
 ///
 /// Displays a right-aligned mark indicator for a question.
 ///
-#let marks = (n, lines: 0, style: none, weight: none, formatter: none, inline: none) => {
+#let marks = (n, lines: 0, style: none, weight: none, formatter: none, inline: none, counted: true) => {
   context {
     let effective-formatter = if formatter != none { formatter } else { _marks-formatter.get() }
 
@@ -36,7 +36,9 @@
       }
     }
 
-    let total-marks = state("total-marks", 0)
-    total-marks.update(t => t + n)
+    if counted {
+      let total-marks = state("total-marks", 0)
+      total-marks.update(t => t + n)
+    }
   }
 }
