@@ -2,4 +2,5 @@
 #let _marks-weight = state("marks-weight", "bold")
 #let _marks-formatter = state("marks-formatter", none)
 #let _marks-inline = state("marks-inline", false)
+#let _marks-counted = state("marks-counted", true)
 #let _marks-total = state("total-marks")

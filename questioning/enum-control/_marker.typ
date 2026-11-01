@@ -12,6 +12,7 @@
     path = path.slice(0, level)
     path.at(level - 1) += 1
     s.path = path
+    if level == 1 and s.counted { s.total-items += 1 }
     s
   })
   context {

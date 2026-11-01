@@ -4,18 +4,18 @@
 ///
 /// Displays a right-aligned mark indicator for a question.
 ///
-#let marks = (n, lines: 0, style: none, weight: none, formatter: none, inline: none, counted: true) => {
+#let marks = (n, lines: 0, style: none, weight: none, formatter: none, inline: none, counted: none) => {
   context {
     let effective-formatter = if formatter != none { formatter } else { _marks-formatter.get() }
+    let effective-inline = if inline != none { inline } else { _marks-inline.get() }
+    let effective-counted = if counted != none { counted } else { _marks-counted.get() }
+    let effective-style = if style != none { style } else { _marks-style.get() }
+    let effective-weight = if weight != none { weight } else { _marks-weight.get() }
 
     if effective-formatter != none {
       effective-formatter(n)
       [#lines-function(lines)]
     } else {
-      let effective-inline = if inline != none { inline } else { _marks-inline.get() }
-      let effective-style = if style != none { style } else { _marks-style.get() }
-      let effective-weight = if weight != none { weight } else { _marks-weight.get() }
-
       let marks-string = effective-style
       marks-string = marks-string.replace(regex("\d+"), str(n))
       marks-string = marks-string.replace("(s)", if n == 1 { "" } else { "s" })
@@ -36,7 +36,7 @@
       }
     }
 
-    if counted {
+    if effective-counted {
       let total-marks = state("total-marks", 0)
       total-marks.update(t => t + n)
     }

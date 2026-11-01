@@ -1,15 +1,14 @@
 #import "_eq-state.typ": _eq-state
 
 ///
-/// Returns the number of top-level enum items reached across the document.
+/// Returns the number of top-level enum items counted across the document.
 ///
-/// This works by reading the final value of the shared enum-control state,
-/// which advances each time a top-level item is numbered. Must be called
-/// inside a `context` block.
-///
-/// Note: `reset-numbering` clears the tracked path, so this returns the
-/// count since the last reset rather than a running total across resets.
+/// This works by reading the final value of a running total, which advances
+/// each time a top-level item is numbered. The total is unaffected by
+/// `reset-numbering` or `prefix`, so a six-question paper returns 6 even if
+/// numbering restarts part way through. Items after `end-of-questions` are
+/// not counted. Must be called inside a `context` block.
 ///
 #let get-total-items = () => {
-  return _eq-state.final().path.at(0, default: 0)
+  return _eq-state.final().total-items
 }

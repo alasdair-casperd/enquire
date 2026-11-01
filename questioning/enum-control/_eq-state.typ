@@ -10,6 +10,10 @@
 //            layout passes (e.g. touying subslides) overwrite rather than
 //            duplicate
 // - mark-scheme: recorded mark scheme notes, keyed like answers
+// - total-items: running count of top-level items while `counted` is true.
+//            Unlike `path`, this is not cleared by `reset-numbering` / `prefix`
+// - counted: whether new top-level items add to `total-items` (switched off
+//            by `end-of-questions`)
 // - config:  label customisation and answer display options
 //
 // The numbering function installed by `setup` both advances `path` and
@@ -23,6 +27,8 @@
 #let _eq-state = state("enquire-enum", (
   path: (),
   epoch: 0,
+  total-items: 0,
+  counted: true,
   data: (:),
   answers: (:),
   mark-scheme: (:),

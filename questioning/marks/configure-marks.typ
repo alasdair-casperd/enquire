@@ -3,9 +3,10 @@
 ///
 /// Configures default mark display settings, stored in state.
 ///
-#let configure-marks = (style: none, weight: none, formatter: none, inline: none) => {
+#let configure-marks = (style: none, weight: none, formatter: none, inline: none, counted: none) => {
   if style != none { _marks-style.update(style) }
   if weight != none { _marks-weight.update(weight) }
   if formatter != none { _marks-formatter.update(_ => formatter) }
   if inline != none { _marks-inline.update(inline) }
+  if counted != none { _marks-counted.update(counted) }
 }
