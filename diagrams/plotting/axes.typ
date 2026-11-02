@@ -38,11 +38,35 @@
 )
 
 ///
+/// Resolve one viewport bound, which may come from a corner point (`from` or
+/// `to`) or from a dedicated parameter (e.g. `x-min`). If both are given they
+/// must agree.
+///
+#let resolve-bound = (corner, corner-name, index, value, value-name, default) => {
+  let from-corner = if corner == auto { none } else { corner.at(index) }
+  if from-corner != none and value != none and from-corner != value {
+    panic(
+      "axes: inconsistent bounds: " + corner-name + " gives " + repr(from-corner)
+        + " but " + value-name + " is " + repr(value),
+    )
+  }
+  if value != none { return value }
+  if from-corner != none { return from-corner }
+  return default
+}
+
+///
 /// Draw a set of axes spanning the rectangle between `from` and `to`.
 ///
 /// The viewport bounds are recorded in the canvas' shared data and as the
 /// anchors "from" and "to"; `plot` and `plot-line` rely on these, so axes
 /// must be drawn before any plots.
+///
+/// - from / to: the bottom-left and top-right corners of the viewport
+///   (default `(-5, -5)` and `(5, 5)`)
+/// - x-min / x-max / y-min / y-max: individual viewport bounds, as an
+///   alternative to `from` and `to`. Any bound given both ways must agree,
+///   otherwise an error is raised.
 ///
 /// - grid: whether to draw a grid
 /// - grid-step: spacing of grid lines (a number, `(x, y)` array or dictionary)
@@ -58,8 +82,12 @@
 /// - x-scale / y-scale: scale factors applied to the whole canvas
 ///
 #let axes = (
-  from: (-5, -5),
-  to: (5, 5),
+  from: auto,
+  to: auto,
+  x-min: none,
+  x-max: none,
+  y-min: none,
+  y-max: none,
   grid: false,
   grid-style: (:),
   grid-step: 1,
@@ -88,6 +116,16 @@
   y-scale: 1,
   tick-font-scale: 0.8em,
 ) => {
+  // Resolve the viewport bounds from `from`/`to` and the individual bounds
+  let from = (
+    resolve-bound(from, "from", 0, x-min, "x-min", -5),
+    resolve-bound(from, "from", 1, y-min, "y-min", -5),
+  )
+  let to = (
+    resolve-bound(to, "to", 0, x-max, "x-max", 5),
+    resolve-bound(to, "to", 1, y-max, "y-max", 5),
+  )
+
   // Apply scale
   cetz.draw.scale(x: x-scale, y: y-scale)
 
