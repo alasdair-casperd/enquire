@@ -4,7 +4,8 @@
 ///
 /// The decoder works in three stages:
 ///   1. The content tree of the equation is flattened into a token stream.
-///   2. Implicit multiplication tokens are inserted (e.g. `2x` -> `2 * x`).
+///   2. Modulus bars are matched up (`|x + 2|` -> `abs(x + 2)`) and implicit
+///      multiplication tokens are inserted (e.g. `2x` -> `2 * x`).
 ///   3. The tokens are parsed into an AST with the usual operator precedence:
 ///      `^` binds tightest (right-associative), then `*` and `/`, then `+`
 ///      and `-`.
@@ -105,6 +106,14 @@
     if txt.trim() == "" or txt in ("(", ")") {
       // Skip whitespace and stray parentheses: grouping is represented
       // structurally by `lr` elements, which are handled separately
+    } else if txt in ("|", "∣") {
+      // Modulus bar. Typst does not group `|x|` structurally, so whether a
+      // bar opens or closes is decided later by `resolve-bars`
+      tokens.push(("bar", none))
+    } else if txt == "‖" {
+      // Typst merges adjacent bars (e.g. in `||x| - 2|`) into one symbol
+      tokens.push(("bar", none))
+      tokens.push(("bar", none))
     } else if txt in ("+", "−", "-", "*", "∗", "/", "÷", "×") {
       let normalized = if txt == "−" { "-" } else if txt == "∗" { "*" } else { txt }
       tokens.push(("op", normalized))
@@ -362,6 +371,41 @@
     },
   )
 
+  // Turn modulus bars into `abs( ... )` tokens. A bar opens a modulus when an
+  // operand is expected (at the start, after an operator, an opening bracket
+  // or another opening bar) or when there is no open modulus to close;
+  // otherwise it closes the innermost open modulus. This handles nesting
+  // such as `||x| - 2|` and `|3 - |x||`, and products such as `|x||y|`.
+  // A stack of open brackets and bars ensures a bar never closes a modulus
+  // opened outside the current brackets.
+  let resolve-bars(tokens) = {
+    let result = ()
+    let stack = ()
+    for tok in tokens {
+      let kind = tok.at(0)
+      if kind == "bar" {
+        let prev = if result.len() > 0 { result.at(-1).at(0) } else { none }
+        let after-operand = prev in ("num", "var", "const", "rparen", "root-end")
+        if after-operand and stack.len() > 0 and stack.at(-1) == "bar" {
+          let _ = stack.pop()
+          result.push(("rparen", none))
+        } else {
+          stack.push("bar")
+          result.push(("func", "abs"))
+          result.push(("lparen", none))
+        }
+      } else {
+        if kind == "lparen" {
+          stack.push("paren")
+        } else if kind == "rparen" and stack.len() > 0 and stack.at(-1) == "paren" {
+          let _ = stack.pop()
+        }
+        result.push(tok)
+      }
+    }
+    result
+  }
+
   // Insert explicit multiplication tokens between adjacent factors, so that
   // e.g. `2x`, `x(x+1)` and `3 sin x` parse as products
   let add-implicit-mult(tokens) = {
@@ -497,6 +541,7 @@
   )
 
   let tokens = (tokenizer.tokenize)(tokenizer, expr, ())
+  tokens = resolve-bars(tokens)
   tokens = add-implicit-mult(tokens)
   let (result, _) = (parser.expr)(parser, tokens, 0)
   result

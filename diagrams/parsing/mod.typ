@@ -1,3 +1,4 @@
+#import "abs-arguments.typ": abs-arguments
 #import "decode-expression.typ": decode-expression
 #import "decode-relation.typ": decode-relation, extract-bounds
 #import "evaluate-ast.typ": evaluate-ast

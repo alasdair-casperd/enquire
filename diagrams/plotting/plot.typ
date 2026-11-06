@@ -2,11 +2,20 @@
 #import "../core/draw.typ": draw
 #import "../core/shape.typ": shape
 #import "generate-plot-points.typ": generate-plot-points
-#import "../parsing/evaluate-expression.typ": evaluate-expression
+#import "../parsing/abs-arguments.typ": abs-arguments
+#import "../parsing/decode-expression.typ": decode-expression
 #import "../parsing/evaluate-ast.typ": evaluate-ast
 #import "../parsing/decode-relation.typ": decode-relation, extract-bounds
 #import "../patterns/mod.typ": patterns
 #import "segment-utils.typ": clip-to-viewport, refine-domain-boundaries, split-at-discontinuities
+
+///
+/// The arguments of every modulus in an AST, as functions of the given
+/// variable. Their sign changes mark the corners of a modulus graph.
+///
+#let corner-functions(ast, variable) = {
+  abs-arguments(ast).map(arg => v => evaluate-ast(arg, variables: ((variable): v)))
+}
 
 ///
 /// Construct a region polygon from lower and upper bound curve segments.
@@ -233,12 +242,14 @@
       }
 
       // Sample both bound curves
+      let indep-var = if swap-axes { "y" } else { "x" }
       let lower-points = generate-plot-points(
         lower-func,
         ctx,
         domain: domain,
         resolution: resolution,
         swap-axes: swap-axes,
+        critical: corner-functions(lower-bound-ast, indep-var),
       )
       let upper-points = generate-plot-points(
         upper-func,
@@ -246,6 +257,7 @@
         domain: domain,
         resolution: resolution,
         swap-axes: swap-axes,
+        critical: corner-functions(upper-bound-ast, indep-var),
       )
 
       // Split each bound at discontinuities (checking jumps along the
@@ -343,33 +355,48 @@
     } else {
       // CURVE PLOTTING
       let swap-axes = false
+      // The AST being plotted (`none` for a Typst function)
+      let ast = none
       let func = if type(expression) != function {
+        let is-y-equation = false
+        let is-x-equation = false
+        let rel = none
+
         if relation-result.type == "relation" and relation-result.single-relation {
-          let rel = relation-result.relations.at(0)
+          rel = relation-result.relations.at(0)
+          is-y-equation = rel.operator == "=" and rel.left.type == "variable" and rel.left.id == "y"
+          is-x-equation = rel.operator == "=" and rel.left.type == "variable" and rel.left.id == "x"
+        }
 
-          let is-y-equation = rel.operator == "=" and rel.left.type == "variable" and rel.left.id == "y"
-          let is-x-equation = rel.operator == "=" and rel.left.type == "variable" and rel.left.id == "x"
-
-          if is-y-equation {
-            // y = f(x): plot the right-hand side as a function of x
-            x => evaluate-ast(rel.right, variables: ("x": x))
-          } else if is-x-equation {
-            // x = f(y): plot the right-hand side as a function of y
-            swap-axes = true
-            y => evaluate-ast(rel.right, variables: ("y": y))
-          } else {
-            // Some other relation: treat the whole thing as an expression
-            x => evaluate-expression(expression, variables: ("x": x))
-          }
+        if is-y-equation {
+          // y = f(x): plot the right-hand side as a function of x
+          ast = rel.right
+        } else if is-x-equation {
+          // x = f(y): plot the right-hand side as a function of y
+          swap-axes = true
+          ast = rel.right
         } else {
-          // A bare expression: plot as y = f(x)
-          x => evaluate-expression(expression, variables: ("x": x))
+          // A bare expression (or some other relation): plot as y = f(x)
+          ast = decode-expression(expression)
+        }
+
+        if swap-axes {
+          y => evaluate-ast(ast, variables: ("y": y))
+        } else {
+          x => evaluate-ast(ast, variables: ("x": x))
         }
       } else {
         expression
       }
 
-      let points = generate-plot-points(func, ctx, domain: domain, resolution: resolution, swap-axes: swap-axes)
+      let points = generate-plot-points(
+        func,
+        ctx,
+        domain: domain,
+        resolution: resolution,
+        swap-axes: swap-axes,
+        critical: corner-functions(ast, if swap-axes { "y" } else { "x" }),
+      )
 
       if points.len() >= 2 {
         // Split into segments at discontinuities (checking jumps along the
