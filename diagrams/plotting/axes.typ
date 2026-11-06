@@ -38,21 +38,34 @@
 )
 
 ///
-/// Resolve one viewport bound, which may come from a corner point (`from` or
-/// `to`) or from a dedicated parameter (e.g. `x-min`). If both are given they
-/// must agree.
+/// Pick component `index` of a pair such as `from` or `x-range`, or `none` if
+/// the pair was not given.
 ///
-#let resolve-bound = (corner, corner-name, index, value, value-name, default) => {
-  let from-corner = if corner == auto { none } else { corner.at(index) }
-  if from-corner != none and value != none and from-corner != value {
-    panic(
-      "axes: inconsistent bounds: " + corner-name + " gives " + repr(from-corner)
-        + " but " + value-name + " is " + repr(value),
-    )
+#let pair-at = (pair, index, name) => {
+  if pair == auto or pair == none { return none }
+  if type(pair) != array or pair.len() != 2 {
+    panic("axes: " + name + " must be an array of length 2, got " + repr(pair))
   }
-  if value != none { return value }
-  if from-corner != none { return from-corner }
-  return default
+  return pair.at(index)
+}
+
+///
+/// Resolve one viewport bound from a list of `(name, value)` sources, where
+/// `none` means not given. All given values must agree.
+///
+#let resolve-bound = (sources, default) => {
+  let given = sources.filter(s => s.at(1) != none)
+  if given.len() == 0 { return default }
+  let (first-name, first-value) = given.first()
+  for (name, value) in given.slice(1) {
+    if value != first-value {
+      panic(
+        "axes: inconsistent bounds: " + first-name + " gives " + repr(first-value)
+          + " but " + name + " gives " + repr(value),
+      )
+    }
+  }
+  return first-value
 }
 
 ///
@@ -64,9 +77,11 @@
 ///
 /// - from / to: the bottom-left and top-right corners of the viewport
 ///   (default `(-5, -5)` and `(5, 5)`)
-/// - x-min / x-max / y-min / y-max: individual viewport bounds, as an
-///   alternative to `from` and `to`. Any bound given both ways must agree,
-///   otherwise an error is raised.
+/// - x-range / y-range: viewport bounds along one axis, as `(min, max)`
+/// - x-min / x-max / y-min / y-max: individual viewport bounds
+///
+/// These are alternatives to `from` and `to`, and can be mixed freely. Any
+/// bound given more than one way must agree, otherwise an error is raised.
 ///
 /// - grid: whether to draw a grid
 /// - grid-step: spacing of grid lines (a number, `(x, y)` array or dictionary)
@@ -84,6 +99,8 @@
 #let axes = (
   from: auto,
   to: auto,
+  x-range: none,
+  y-range: none,
   x-min: none,
   x-max: none,
   y-min: none,
@@ -116,14 +133,27 @@
   y-scale: 1,
   tick-font-scale: 0.8em,
 ) => {
-  // Resolve the viewport bounds from `from`/`to` and the individual bounds
+  // Resolve the viewport bounds from `from`/`to`, the ranges and the
+  // individual bounds
   let from = (
-    resolve-bound(from, "from", 0, x-min, "x-min", -5),
-    resolve-bound(from, "from", 1, y-min, "y-min", -5),
+    resolve-bound(
+      (("from", pair-at(from, 0, "from")), ("x-range", pair-at(x-range, 0, "x-range")), ("x-min", x-min)),
+      -5,
+    ),
+    resolve-bound(
+      (("from", pair-at(from, 1, "from")), ("y-range", pair-at(y-range, 0, "y-range")), ("y-min", y-min)),
+      -5,
+    ),
   )
   let to = (
-    resolve-bound(to, "to", 0, x-max, "x-max", 5),
-    resolve-bound(to, "to", 1, y-max, "y-max", 5),
+    resolve-bound(
+      (("to", pair-at(to, 0, "to")), ("x-range", pair-at(x-range, 1, "x-range")), ("x-max", x-max)),
+      5,
+    ),
+    resolve-bound(
+      (("to", pair-at(to, 1, "to")), ("y-range", pair-at(y-range, 1, "y-range")), ("y-max", y-max)),
+      5,
+    ),
   )
 
   // Apply scale
