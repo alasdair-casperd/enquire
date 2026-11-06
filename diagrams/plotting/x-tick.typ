@@ -16,6 +16,7 @@
   tick-length: 0.3em,
   axis-color: black,
   font-scale: 0.8em,
+  dx: 0,
 ) => {
   for value in values.pos() {
     let display = if label == auto { $#value$ } else { label }
@@ -25,7 +26,7 @@
       anchor: "north",
       padding: 0,
     )
-    node((value, y-origin), text(size: font-scale, display, fill: axis-color), anchor: "north", padding: 0.4em)
+    node((value + dx, y-origin), text(size: font-scale, display, fill: axis-color), anchor: "north", padding: 0.4em)
   }
 }
 
